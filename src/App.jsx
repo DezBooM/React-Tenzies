@@ -17,7 +17,7 @@ function App() {
       setTenzies(true)
       setStats(prev => [...prev, {id:uuid(), roll: rolled}])
     }
-  }, [dice, rolled])
+  }, [dice])
 
   useEffect(() => {
     localStorage.setItem("stats", JSON.stringify(stats.slice(0,3)))
