@@ -9,19 +9,48 @@ function App() {
   const [tenzies, setTenzies] = useState(false)
   const [rolled, setRolled] = useState(0)
   const [stats, setStats] = useState(() => JSON.parse(localStorage.getItem("stats")) || [])
+  const [time, setTime] = useState({m:0, s:0, ms:0})
+console.log(time)
+  let updatedM = time.m
+  let updatedS = time.s
+  let updatedMs = time.ms
+
+  const run = () => {
+    if(updatedS === 60) {
+        updatedM++
+        updatedS = 0
+    }
+    if(updatedMs === 100) {
+        updatedS++
+        updatedMs = 0
+    }
+    updatedMs++
+    return setTime({m:updatedM, s:updatedS, ms:updatedMs})
+}
 
   useEffect(() => {
     const allEqual = dice => dice.every( item => item.value === dice[0].value )
     const allHeld = dice => dice.every(item => item.isHeld) 
     if(allEqual(dice) && allHeld(dice)) {
       setTenzies(true)
-      setStats(prev => [...prev, {id:uuid(), roll: rolled}])
+      setStats(prev => [...prev, {id:uuid(), roll: rolled, time:time}])
     }
   }, [dice])
 
   useEffect(() => {
     localStorage.setItem("stats", JSON.stringify(stats.slice(0,3)))
   }, [stats])
+
+  
+  useEffect(() => {
+    let timerInterval;
+    if (!tenzies) {
+      timerInterval = setInterval(run, 10)
+    } else if (tenzies && time.ms !== 0) {
+      clearInterval(timerInterval);
+    }
+    return () => clearInterval(timerInterval);
+  }, [time, tenzies]);
 
   const newDie = () => {
     return (
@@ -61,6 +90,7 @@ function App() {
       setDice(allNewDice())
       setTenzies(false)
       setRolled(0)
+      setTime({h:0, m:0, s:0, ms:0})
     }
   }
 
@@ -78,7 +108,12 @@ function App() {
           className="bg-neutral-900 mt-8 rounded-full text-3xl text-center px-1 md:px-3 py-1
                      outline-none active:shadow-inset w-full md:w-1/4"
           onClick={rollDice}>{tenzies ? "New Game" : "Roll"}</button>
-          <p className="text-3xl mt-1">Rolled: {rolled}</p>
+          <div className="flex text-3xl mt-1">
+            <p className="mr-3">Rolled:{rolled}</p>
+            {time.m >= 10 ? time.m : "0" + time.m}:
+            {time.s >= 10 ? time.s : "0" + time.s}:
+            {time.ms >= 10 ? time.ms : "0" + time.ms}
+          </div>
           <p className="text-3xl">Leaderboard:</p>
           <ol className="leading-none list-decimal" type="1">
             {stats.sort((a,b) => a.roll-b.roll).slice(0,3).map(roll => <Stats key={roll.id} {...roll} /> )} 
