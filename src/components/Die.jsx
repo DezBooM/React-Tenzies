@@ -6,7 +6,7 @@ function Die({ value, isHeld, handleClick }) {
 
   return (
     <div
-      className={`cursor-pointer mt-4 text-4xl w-12 h-12 flex justify-center items-center shadow-custom rounded-md ${style}`}
+      className={`cursor-pointer m-2 md:mt-4 text-4xl w-12 h-12 flex justify-center items-center shadow-custom rounded-md ${style}`}
       onClick={handleClick}
     >
       {value}

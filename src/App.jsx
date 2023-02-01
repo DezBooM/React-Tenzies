@@ -53,32 +53,26 @@ function App() {
     return () => clearInterval(timerInterval)
   }, [time, tenzies])
 
-  const newDie = () => {
-    return {
-      value: Math.floor(Math.random() * 6 + 1),
-      isHeld: false,
-      id: uuid(),
-    }
-  }
+  const newDie = () => ({
+    value: Math.floor(Math.random() * 6 + 1),
+    isHeld: false,
+    id: uuid(),
+  })
 
   function allNewDice() {
-    const valueArray = []
-    for (let i = 0; i < 10; i++) {
-      valueArray.push({
+    return Array(10)
+      .fill()
+      .map(() => ({
         value: Math.floor(Math.random() * 6 + 1),
         isHeld: false,
         id: uuid(),
-      })
-    }
-    return valueArray
+      }))
   }
 
   const holdDice = (id) =>
-    setDice((prev) => {
-      return prev.map((die) =>
-        die.id === id ? { ...die, isHeld: !die.isHeld } : die
-      )
-    })
+    setDice((prev) =>
+      prev.map((die) => (die.id === id ? { ...die, isHeld: !die.isHeld } : die))
+    )
 
   const rollDice = () => {
     if (!tenzies) {
@@ -99,9 +93,9 @@ function App() {
   }
 
   return (
-    <main className="h-screen flex justify-center items-start md:items-center bg-neutral-900 font-dokdo">
+    <main className="min-h-screen flex justify-center items-start md:items-center bg-neutral-900 font-dokdo">
       <div
-        className="flex flex-col justify-center items-center w-full md:w-1/2 pb-2  mx-2 md:mx-0
+        className="flex flex-col justify-center items-center max-w-full md:w-1/2 pb-2  mx-2 md:mx-0
        md:h-3/4 h-2/3 px-1 md:px-10 rounded-[20px] bg-red-600 text-rose-200 mt-5 md:mt-0"
       >
         <h1 className="text-7xl">Tenzies</h1>
@@ -109,13 +103,13 @@ function App() {
           Roll until all dice are the same. Click each die to freeze it at its
           current value between rolls.
         </p>
-        <div className="grid grid-cols-5 gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-5 md:gap-2">
           {dice.map((die) => (
             <Die key={die.id} {...die} handleClick={() => holdDice(die.id)} />
           ))}
         </div>
         <button
-          className="bg-neutral-900 mt-8 rounded-full text-3xl text-center px-1 md:px-3 py-1
+          className="bg-neutral-900 mt-4 md:mt-8 rounded-full text-3xl text-center px-1 md:px-3 py-1
                      outline-none active:shadow-inset w-full md:w-1/4"
           onClick={rollDice}
         >
